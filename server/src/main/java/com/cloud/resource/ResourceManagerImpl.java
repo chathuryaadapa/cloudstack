@@ -18,7 +18,7 @@ package com.cloud.resource;
 
 import static com.cloud.configuration.ConfigurationManagerImpl.MIGRATE_VM_ACROSS_CLUSTERS;
 import static com.cloud.configuration.ConfigurationManagerImpl.SET_HOST_DOWN_TO_MAINTENANCE;
-
+import com.cloud.utils.ssh.SshHelper;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
@@ -2691,15 +2691,31 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
         }
 
         final String guid = hostDetails.get("guid");
+        final String hostIp =hostDetails.get("hostip");
+        final String username = hostDetails.get("username");
+        final String privateKey = hostDetails.get("privatekey");
         final List<HostVO> currentHosts = listAllUpAndEnabledHostsInOneZoneByType(hostType, zoneId);
         for (final HostVO currentHost : currentHosts) {
             if (currentHost.getGuid().equals(guid)) {
                 return currentHost;
             }
         }
-
+        if (!isSEEnabled(hostIp, username, privateKey)) {
+            throw new CloudRuntimeException("Host does not support Secure Encryption (SE). Aborting addition.");
+        }
         return createHostAndAgent(resource, hostDetails, true, null, false);
     }
+    private boolean isSEEnabled(String hostIp, String username, String privateKey) {
+    String command = "cat /sys/firmware/uv/prot_virt_host";
+    try {
+        Pair<Boolean, String> result = SshHelper.sshExecute(hostIp, 22, username, null, privateKey, command, 10000, 10000, 10000);
+        return "1".equals(result.second().trim());
+    } catch (Exception e) {
+        s_logger.error("Failed to check SE status on host " + hostIp, e);
+        return false;
+    }
+   }
+
 
     @Override
     public HostVO createHostVOForConnectedAgent(final StartupCommand[] cmds) {
