@@ -302,6 +302,18 @@ public class HostResponse extends BaseResponseWithAnnotations {
     @Param(description = "CPU Arch of the host", since = "4.20")
     private String arch;
 
+    @SerializedName("se_enabled")
+    private Boolean seEnabled;
+
+    public Boolean getSEEnabled() {
+        return seEnabled;
+    }
+
+    public void setSEEnabled(Boolean seEnabled) {
+        this.seEnabled = seEnabled;
+    }
+
+
     @Override
     public String getObjectId() {
         return this.getId();
