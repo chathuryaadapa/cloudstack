@@ -33,9 +33,9 @@ import org.apache.cloudstack.api.response.PodResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.cloud.host.HostVO;
-import com.cloud.resource.ResourceManagerImpl;
-import com.cloud.resource.ResourceManager;
+// import com.cloud.host.HostVO;
+// import com.cloud.resource.ResourceManagerImpl;
+// import com.cloud.resource.ResourceManager;
 
 import com.cloud.exception.DiscoveryException;
 import com.cloud.host.Host;
@@ -132,47 +132,48 @@ public class AddHostCmd extends BaseCmd {
     public long getEntityOwnerId() {
         return Account.ACCOUNT_ID_SYSTEM;
     }
-   private boolean checkSEStatus(Host host) {
-        if (host instanceof HostVO) {
-            HostVO hostVO = (HostVO) host;
-            return ResourceManagerImpl.isSEEnabled(
-                hostVO.getPrivateIpAddress(),
-                hostVO.getDetail("username"),
-                hostVO.getDetail("privatekey")
-            );
-        }
-        return false;
-    }
+//    private boolean checkSEStatus(Host host) {
+//         if (host instanceof HostVO) {
+//             HostVO hostVO = (HostVO) host;
+//             return ResourceManagerImpl.isSEEnabled(
+//                 hostVO.getPrivateIpAddress(),
+//                 hostVO.getDetail("username"),
+//                 hostVO.getDetail("privatekey")
+//             );
+//         }
+//         return false;
+//     }
     @Override
     public void execute() {
         try {
             List<? extends Host> result = _resourceService.discoverHosts(this);
             ListResponse<HostResponse> response = new ListResponse<HostResponse>();
             List<HostResponse> hostResponses = new ArrayList<HostResponse>();
-            // if (result != null && result.size() > 0) {
-            //     for (Host host : result) {
-            //         HostResponse hostResponse = _responseGenerator.createHostResponse(host);
-            //         hostResponses.add(hostResponse);
-            //     }
-            // } else {
-            //     throw new ServerApiException(ApiErrorCode.INTERNAL_ERROR, "Failed to add host");
-            // }
-            if (result != null && !result.isEmpty()) {
-                        for (Host host : result) {
-                            // Check if SE is enabled on the host and set the response field
-                            HostResponse hostResponse = _responseGenerator.createHostResponse(host);
-                            boolean seEnabled = checkSEStatus(host);
-                            hostResponse.setSEEnabled(seEnabled);
-                            
-                            if (!seEnabled) {
-                                logger.warn("Host {} does not support Secure Encryption (SE). Proceeding without SE.", host.getName());
-                            }
-
-                            hostResponses.add(hostResponse);
-                        }
+            if (result != null && result.size() > 0) {
+                for (Host host : result) {
+                    HostResponse hostResponse = _responseGenerator.createHostResponse(host);
+                    hostResponses.add(hostResponse);
+                }
             } else {
-                        throw new ServerApiException(ApiErrorCode.INTERNAL_ERROR, "Failed to add host");
+                throw new ServerApiException(ApiErrorCode.INTERNAL_ERROR, "Failed to add host");
             }
+            // if (result != null && !result.isEmpty()) {
+            //             for (Host host : result) {
+            //                 // Check if SE is enabled on the host and set the response field
+            //                 HostResponse hostResponse = _responseGenerator.createHostResponse(host);
+            //                 // boolean seEnabled = checkSEStatus(host);
+            //                 // hostResponse.setSEEnabled(seEnabled);
+                            
+            //                 // if (!seEnabled) {
+            //                 //     logger.warn("Host {} does not support Secure Encryption (SE). Proceeding without SE.", host.getName());
+            //                 // }
+            //             hostResponse.setSEEnabled(host.getDetail("seEnabled") != null && Boolean.parseBoolean(host.getDetail("seEnabled")));
+
+            //                 hostResponses.add(hostResponse);
+            //             }
+            // } else {
+            //             throw new ServerApiException(ApiErrorCode.INTERNAL_ERROR, "Failed to add host");
+            // }
             response.setResponses(hostResponses);
             response.setResponseName(getCommandName());
 

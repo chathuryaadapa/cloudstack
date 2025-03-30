@@ -2705,7 +2705,7 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
         }
         return createHostAndAgent(resource, hostDetails, true, null, false);
     }
-    private boolean isSEEnabled(String hostIp, String username, String privateKey) {
+    public boolean isSEEnabled(String hostIp, String username, String privateKey) {
     String command = "cat /sys/firmware/uv/prot_virt_host";
     try {
         Pair<Boolean, String> result = SshHelper.sshExecute(hostIp, 22, username, null, privateKey, command, 10000, 10000, 10000);
