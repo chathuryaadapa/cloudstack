@@ -2714,14 +2714,35 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
     public boolean isSEEnabled(String hostIp, String username, String privateKey) {
         String command = "cat /sys/firmware/uv/prot_virt_host";
         try {
-            Pair<Boolean, String> result = SshHelper.sshExecute(hostIp, 22, username, null, privateKey, command, 10000, 10000, 10000);
-            s_logger.info("SSH Result: " + result);
-            return result != null && "1".equals(result.second().trim());
+            s_logger.info("Checking SE status on host: " + hostIp);
+    
+            Pair<Boolean, String> result = SshHelper.sshExecute(
+                hostIp, 22, username, null, privateKey, command, 10000, 10000, 10000
+            );
+    
+            if (result == null) {
+                s_logger.warn("SE check failed: SSH execution returned null.");
+                return false;
+            }
+    
+            s_logger.info("SSH Result from host [" + hostIp + "]: " + result);
+    
+            String seStatus = result.second() != null ? result.second().trim() : "";
+            boolean isEnabled = "1".equals(seStatus);
+    
+            if (isEnabled) {
+                s_logger.info("Secure Encryption (SE) is ENABLED on host: " + hostIp);
+            } else {
+                s_logger.warn("Secure Encryption (SE) is NOT enabled on host: " + hostIp);
+            }
+    
+            return isEnabled;
         } catch (Exception e) {
             s_logger.error("Failed to check SE status on host " + hostIp, e);
             return false;
         }
     }
+    
 
 
     @Override
