@@ -33,6 +33,9 @@ import org.apache.cloudstack.api.response.PodResponse;
 import org.apache.cloudstack.api.response.ZoneResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.cloudstack.engine.orchestration.service.ResourceManagerImpl;
+import com.cloud.host.HostVO;
+
 
 import com.cloud.exception.DiscoveryException;
 import com.cloud.host.Host;
