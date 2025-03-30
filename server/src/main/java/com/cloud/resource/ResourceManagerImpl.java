@@ -19,7 +19,7 @@ package com.cloud.resource;
 import static com.cloud.configuration.ConfigurationManagerImpl.MIGRATE_VM_ACROSS_CLUSTERS;
 import static com.cloud.configuration.ConfigurationManagerImpl.SET_HOST_DOWN_TO_MAINTENANCE;
 import com.cloud.utils.ssh.SshHelper;
-import org.apache.commons.lang3.tuple.Pair;
+import com.cloud.utils.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -2712,15 +2712,15 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
         return createHostAndAgent(resource, hostDetails, true, null, false);
     }
     public boolean isSEEnabled(String hostIp, String username, String privateKey) {
-    String command = "cat /sys/firmware/uv/prot_virt_host";
-    try {
-        Pair<Boolean, String> result = SshHelper.sshExecute(hostIp, 22, username, null, privateKey, command, 10000, 10000, 10000);
-        return "1".equals(result.second().trim());
-    } catch (Exception e) {
-        s_logger.error("Failed to check SE status on host " + hostIp, e);
-        return false;
+        String command = "cat /sys/firmware/uv/prot_virt_host";
+        try {
+            Pair<Boolean, String> result = SshHelper.sshExecute(hostIp, 22, username, null, privateKey, command, 10000, 10000, 10000);
+            return "1".equals(result.getSecond().trim());  // FIXED: Use getSecond()
+        } catch (Exception e) {
+            s_logger.error("Failed to check SE status on host " + hostIp, e);
+            return false;
+        }
     }
-   }
 
 
     @Override
