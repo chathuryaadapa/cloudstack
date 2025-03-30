@@ -19,6 +19,10 @@ package com.cloud.resource;
 import static com.cloud.configuration.ConfigurationManagerImpl.MIGRATE_VM_ACROSS_CLUSTERS;
 import static com.cloud.configuration.ConfigurationManagerImpl.SET_HOST_DOWN_TO_MAINTENANCE;
 import com.cloud.utils.ssh.SshHelper;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
@@ -317,6 +321,8 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
     private GenericSearchBuilder<HostVO, String> _hypervisorsInDC;
 
     private SearchBuilder<HostGpuGroupsVO> _gpuAvailability;
+
+    private static final Logger s_logger = LoggerFactory.getLogger(ResourceManagerImpl.class);
 
     private void insertListener(final Integer event, final ResourceListener listener) {
         List<ResourceListener> lst = _lifeCycleListeners.computeIfAbsent(event, k -> new ArrayList<>());
