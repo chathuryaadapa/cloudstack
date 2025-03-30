@@ -2715,7 +2715,8 @@ public class ResourceManagerImpl extends ManagerBase implements ResourceManager,
         String command = "cat /sys/firmware/uv/prot_virt_host";
         try {
             Pair<Boolean, String> result = SshHelper.sshExecute(hostIp, 22, username, null, privateKey, command, 10000, 10000, 10000);
-            return "1".equals(result.second.trim());  // FIX: Access `second` as a field, not method
+            s_logger.info("SSH Result: " + result);
+            return result != null && "1".equals(result.second().trim());
         } catch (Exception e) {
             s_logger.error("Failed to check SE status on host " + hostIp, e);
             return false;
